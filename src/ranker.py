@@ -123,6 +123,10 @@ def hybrid_rank_candidates(
         if has_llm_hype and not has_core_ml:
             is_disqualified = True
 
+        # I. 5+ years entirely on closed-source proprietary systems with zero external validation
+        if yoe >= 5.0 and github_score == -1.0:
+            is_disqualified = True
+
         # E. Honeypot check: YoE greater than career span
         yoe_val = profile.get("years_of_experience") if profile else None
         yoe = float(yoe_val) if yoe_val is not None else 0.0
@@ -379,7 +383,13 @@ def hybrid_rank_candidates(
             else:
                 s_notice = 0.1
                 
-            s_behavioral = 0.25 * s_login + 0.25 * s_open + 0.25 * s_resp + 0.25 * s_notice
+            # Github activity modifier for non-disqualified candidates
+            s_github = 0.0
+            if github_score > 0.0:
+                s_github = github_score / 100.0
+                
+            # Adjusted behavioral composite to include Github validation
+            s_behavioral = 0.20 * s_login + 0.20 * s_open + 0.20 * s_resp + 0.20 * s_notice + 0.20 * s_github
             
             # Composite Score
             s_final = 0.40 * s_technical + 0.35 * s_career + 0.25 * s_behavioral
