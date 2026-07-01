@@ -1,0 +1,10 @@
+python-docx
+python-dotenv
+openai
+sentence-transformers
+scikit-learn
+numpy
+pandas
+reportlab
+requests
+pytest
