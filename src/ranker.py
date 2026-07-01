@@ -123,13 +123,15 @@ def hybrid_rank_candidates(
         if has_llm_hype and not has_core_ml:
             is_disqualified = True
 
+        # Initialize yoe early for check I
+        yoe_val = profile.get("years_of_experience") if profile else None
+        yoe = float(yoe_val) if yoe_val is not None else 0.0
+
         # I. 5+ years entirely on closed-source proprietary systems with zero external validation
         if yoe >= 5.0 and github_score == -1.0:
             is_disqualified = True
 
         # E. Honeypot check: YoE greater than career span
-        yoe_val = profile.get("years_of_experience") if profile else None
-        yoe = float(yoe_val) if yoe_val is not None else 0.0
         
         total_months = sum((job.get("duration_months") or 0) for job in career_history if isinstance(job, dict))
         career_span_years = total_months / 12.0
