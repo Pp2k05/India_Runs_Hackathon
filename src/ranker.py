@@ -285,7 +285,12 @@ def hybrid_rank_candidates(
             
             # Core AI Tools check
             core_tools_match = 0
-            for ct_list in [["embeddings", "sentence-transformers"], ["pinecone", "weaviate", "qdrant", "milvus", "faiss"], ["ndcg", "mrr", "map", "evaluation"], ["python"]]:
+            for ct_list in [
+                ["embeddings", "sentence-transformers", "openai embeddings", "bge", "e5"], 
+                ["pinecone", "weaviate", "qdrant", "milvus", "opensearch", "elasticsearch", "faiss"], 
+                ["ndcg", "mrr", "map", "evaluation", "offline-to-online correlation"], 
+                ["python"]
+            ]:
                 if any(k in all_text for k in ct_list):
                     core_tools_match += 1
             s_core_tools = core_tools_match / 4.0
