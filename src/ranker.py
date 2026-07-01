@@ -290,8 +290,13 @@ def hybrid_rank_candidates(
                     core_tools_match += 1
             s_core_tools = core_tools_match / 4.0
             
-            s_technical_raw = 0.6 * s_semantic + 0.2 * s_skill_overlap + 0.2 * s_core_tools
-            s_technical = s_technical_raw * trust_factor
+            # Production & Shipping Bonus (Explicitly reward applied/shipped models vs pure research)
+            production_keys = ["production", "shipped", "deployed", "scale", "real users", "end-to-end", "latency", "throughput"]
+            has_production = any(re.search(r'\b' + re.escape(k) + r'\b', all_text) for k in production_keys)
+            s_production_bonus = 0.10 if has_production else 0.0
+            
+            s_technical_raw = 0.5 * s_semantic + 0.2 * s_skill_overlap + 0.2 * s_core_tools + s_production_bonus
+            s_technical = min(1.0, s_technical_raw * trust_factor)
             
             # --- Career Score (35%) ---
             if 6.0 <= yoe <= 8.0:
