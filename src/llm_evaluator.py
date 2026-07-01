@@ -163,16 +163,45 @@ def evaluate_candidate_fit(job_desc: str, candidate: Dict[str, Any], api_key: st
 
     import hashlib
     h_val = int(hashlib.md5(cid.encode()).hexdigest(), 16)
-    template_idx = h_val % 4
     
-    if template_idx == 0:
-        reasoning = f"This {title} brings {yoe:.1f} years of experience to the table, matching {overlap_count} core skills. Their primary strength lies in {highest_channel.lower()} factors, though {lowest_channel.lower()} areas could be improved. The {int(response_rate * 100)}% recruiter response rate is a notable behavioral signal."
-    elif template_idx == 1:
-        reasoning = f"A solid candidate with a background as a {title} ({yoe:.1f} YoE). While they excel in {highest_channel.lower()} alignment, we noted some gaps in their {lowest_channel.lower()} profile. They successfully hit {overlap_count} key skill requirements from the JD."
-    elif template_idx == 2:
-        reasoning = f"We highlight this profile due to strong {highest_channel.lower()} matching. The candidate has {yoe:.1f} years of experience, currently working as a {title}. A potential concern is their {lowest_channel.lower()} score, but a {int(response_rate * 100)}% response rate indicates good market activity."
-    else:
-        reasoning = f"Demonstrating exceptional {highest_channel.lower()} fit, this {title} possesses {yoe:.1f} years of relevant tenure. They align with {overlap_count} required skills. However, the evaluation flagged their {lowest_channel.lower()} dimensions as the weakest link in their application."
+    intros = [
+        f"This {title} brings {yoe:.1f} years of relevant experience.",
+        f"Offering {yoe:.1f} years of tenure, this {title} is a solid prospect.",
+        f"A dedicated {title} with a {yoe:.1f}-year track record.",
+        f"Evaluating this {title} profile reveals {yoe:.1f} years of industry presence.",
+        f"With {yoe:.1f} years under their belt, this {title} shows clear capability."
+    ]
+    
+    strengths = [
+        f"Their primary advantage is a high {highest_channel.lower()} alignment.",
+        f"They excel particularly in the {highest_channel.lower()} dimension.",
+        f"We highlight their exceptional {highest_channel.lower()} fit for this role.",
+        f"The candidate's {highest_channel.lower()} score stands out as their strongest asset.",
+        f"A major positive signal is their robust {highest_channel.lower()} metrics."
+    ]
+    
+    weaknesses = [
+        f"Conversely, the {lowest_channel.lower()} factors require some development.",
+        f"However, we must acknowledge their {lowest_channel.lower()} profile as a relative weak point.",
+        f"A notable concern is their lower performance in {lowest_channel.lower()} assessments.",
+        f"The primary gap in this application is the {lowest_channel.lower()} evaluation.",
+        f"While strong overall, their {lowest_channel.lower()} dimensions are less convincing."
+    ]
+    
+    conclusions = [
+        f"They successfully hit {overlap_count} key JD skills and maintain a {int(response_rate * 100)}% response rate.",
+        f"Matching {overlap_count} required skills, they also show a {int(response_rate * 100)}% response rate.",
+        f"The profile aligns with {overlap_count} core skills, backed by a {int(response_rate * 100)}% response metric.",
+        f"JD alignment is confirmed via {overlap_count} overlapping skills and a {int(response_rate * 100)}% recruiter response.",
+        f"They demonstrate {overlap_count} relevant skills and a healthy {int(response_rate * 100)}% platform response rate."
+    ]
+    
+    idx_i = h_val % 5
+    idx_s = (h_val // 5) % 5
+    idx_w = (h_val // 25) % 5
+    idx_c = (h_val // 125) % 5
+    
+    reasoning = f"{intros[idx_i]} {strengths[idx_s]} {weaknesses[idx_w]} {conclusions[idx_c]}"
     
     return {
         "trajectory_score": traj_score,

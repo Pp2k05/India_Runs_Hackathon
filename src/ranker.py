@@ -295,6 +295,14 @@ def hybrid_rank_candidates(
                     core_tools_match += 1
             s_core_tools = core_tools_match / 4.0
             
+            # Tier 5 Implicit Fit (JD explicitly requires detecting plain-language structural fits)
+            # A candidate missing 'RAG'/'Pinecone' but building a 'recommendation system' gets implicit technical credit
+            implicit_ml_keys = ["recommendation system", "recommender system", "ranking system", "search engine", "personalization engine"]
+            has_implicit_ml = any(re.search(r'\b' + re.escape(k) + r'\b', history_desc) for k in implicit_ml_keys)
+            if has_implicit_ml:
+                s_core_tools = max(s_core_tools, 0.75)
+                s_skill_overlap = max(s_skill_overlap, 0.5)
+            
             # Production & Shipping Bonus (Explicitly reward applied/shipped models vs pure research)
             production_keys = ["production", "shipped", "deployed", "scale", "real users", "end-to-end", "latency", "throughput"]
             has_production = any(re.search(r'\b' + re.escape(k) + r'\b', all_text) for k in production_keys)
