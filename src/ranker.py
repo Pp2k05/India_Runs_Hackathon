@@ -111,6 +111,17 @@ def hybrid_rank_candidates(
                 is_disqualified = True
         else:
             is_disqualified = True
+            
+        # H. LLM-Hype only check (LangChain/OpenAI with no pre-LLM core ML experience)
+        llm_hype_keys = {"langchain", "openai", "chatgpt", "gpt-4", "gpt-3", "prompt engineering"}
+        core_ml_keys = {"scikit-learn", "pandas", "numpy", "pytorch", "tensorflow", "keras", "xgboost", "svm", "random forest", "logistic regression"}
+        
+        has_llm_hype = any(re.search(r'\b' + re.escape(k) + r'\b', all_text) for k in llm_hype_keys)
+        has_core_ml = any(re.search(r'\b' + re.escape(k) + r'\b', all_text) for k in core_ml_keys)
+        
+        # Disqualify if they only have recent LLM wrapper experience but no fundamental ML production experience
+        if has_llm_hype and not has_core_ml:
+            is_disqualified = True
 
         # E. Honeypot check: YoE greater than career span
         yoe_val = profile.get("years_of_experience") if profile else None
